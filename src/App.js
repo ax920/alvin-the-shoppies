@@ -1,15 +1,12 @@
-import logo from './logo.svg';
 import './App.css';
+import CenteredGrid from './CenteredGrid';
 
 function App() {
   return (
     <div className="App">
       <div class="background">
         <div class="main-content-container">
-          <p>The Shoppies!!</p>
-          <div id="tester">
-            <p>test</p>
-          </div>
+          <CenteredGrid></CenteredGrid>
         </div>
       </div>
       {/* <header className="App-header">
