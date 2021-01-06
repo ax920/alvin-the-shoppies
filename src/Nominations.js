@@ -1,10 +1,14 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
 import Fab from '@material-ui/core/Fab';
 import MenuIcon from '@material-ui/icons/Menu';
 import Popover from '@material-ui/core/Popover';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -15,17 +19,38 @@ const useStyles = makeStyles((theme) => ({
         padding: theme.spacing(2),
     },
     fab: {
-        position: 'absolute',
+        position: 'fixed',
         bottom: theme.spacing(2),
         left: theme.spacing(2),
     },
     card: {
         minWidth: 800,
-        minHeight: 150
+        minHeight: 150,
+    },
+    img: {
+        margin: 'auto',
+        display: 'block',
+        maxWidth: '50%',
+        maxHeight: '50%',
+    },
+    movieTitle: {
+        margin: -5,
+        textAlign: 'center',
+    },
+    movieYear: {
+        textAlign: 'center',
+    },
+    removeButton: {
+        marginTop: -10,
+        margin: 'auto',
+    },
+    removeIcon: {
+        fill: 'red'
     }
 }));
 
-export default function SimplePopover() {
+export default function SimplePopover(props) {
+    console.log(props)
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
 
@@ -70,12 +95,29 @@ export default function SimplePopover() {
                     className={classes.card}
                     variant="outlined">
                     <CardContent>
-                        <p>helloooo</p>
-                        <h1>helloo2</h1>
+                        <Grid container spacing={2}>
+                            {props.nominees.map((tile) => (
+                                <Grid item xs={3}>
+                                    <Grid container justify="center" alignItems="center" direction="column" spacing={2}>
+                                        <Grid item>
+                                            <img className={classes.img} alt="complex" src={tile.Poster} />
+                                        </Grid>
+                                        <IconButton className={classes.removeButton} aria-label="add" size="small">
+                                            <RemoveCircleOutlineIcon className={classes.removeIcon} ></RemoveCircleOutlineIcon>
+                                        </IconButton>
+                                        <Grid item xs>
+                                            <Typography className={classes.movieTitle} gutterBottom variant="subtitle1">
+                                                {tile.Title}
+                                            </Typography>
+                                            <Typography className={classes.movieYear} variant="body2" color="textSecondary">
+                                                {tile.Year}
+                                            </Typography>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                            ))}
+                        </Grid>
                     </CardContent>
-                    {/* <CardActions>
-                        <Button size="small">Learn More</Button>
-                    </CardActions> */}
                 </Card>
             </Popover>
         </div>
