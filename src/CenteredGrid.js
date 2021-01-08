@@ -2,12 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import TextField from '@material-ui/core/TextField';
-import Dialog from '@material-ui/core/Dialog';
 import Nominations from './Nominations';
+import Snackbar from '@material-ui/core/Snackbar';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -51,6 +57,9 @@ const useStyles = makeStyles((theme) => ({
   resultText: {
     paddingLeft: 30,
     paddingTop: 10
+  },
+  addIcon: {
+    fill: 'green'
   }
 }));
 
@@ -60,20 +69,26 @@ export default function CenteredGrid() {
   const [items, setItems] = useState([]);
   const [hasSearched, setHasSearched] = useState(false);
   const [searchTitle, setSearchTitle] = useState('');
-  const [nominees, setNominees] = useState([]);
+  const [nominees, setNominees] = useState(JSON.parse(localStorage.getItem('nominees')) || []);
+  const [addedMovieSnackbar, setAddedMovieSnackbar] = React.useState(false);
+  const [exceedsMaxDialogOpen, setExceedsMaxDialogOpen] = React.useState(false);
+
+  useEffect(() => {
+    localStorage.setItem('nominees', JSON.stringify(nominees));
+  }, [nominees]);
+
+  const handleChange = (newNominees) => {
+    setNominees(newNominees);
+  }
 
   const getMovies = () => {
     fetch("http://www.omdbapi.com/?apikey=23d52167&s=" + searchTitle)
       .then(res => res.json())
       .then(
         (result) => {
-          // console.log(result.Search)
           setIsLoaded(true);
           setItems(result.Search);
         },
-        // Note: it's important to handle errors here
-        // instead of a catch() block so that we don't swallow
-        // exceptions from actual bugs in components.
         (error) => {
           setIsLoaded(true);
           setError(error);
@@ -87,7 +102,6 @@ export default function CenteredGrid() {
     if (event.keyCode == 13) {
       setIsLoaded(false);
       setHasSearched(true);
-      // console.log('value', event.target.value);
       getMovies();
     }
   };
@@ -97,8 +111,30 @@ export default function CenteredGrid() {
   };
 
   const onAddMovie = (tile) => {
+    if (nominees.some(movie => movie.imdbID === tile.imdbID)) {
+      return;
+    }
+    if (nominees.length == 5) {
+      handleExceedsDialogOpen();
+      return;
+    }
     setNominees([...nominees, tile]);
-    console.log(nominees);
+    setAddedMovieSnackbar(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+    setAddedMovieSnackbar(false);
+  };
+
+  const handleExceedsDialogOpen = () => {
+    setExceedsMaxDialogOpen(true);
+  };
+
+  const handleExceedsDialogClose = () => {
+    setExceedsMaxDialogOpen(false);
   };
 
   if (error) {
@@ -140,7 +176,7 @@ export default function CenteredGrid() {
                         <Grid item>
                           <img className={classes.img} alt="complex" src={tile.Poster} />
                           <IconButton aria-label="add" onClick={() => onAddMovie(tile)} size="small">
-                            <AddCircleOutlineIcon className=""></AddCircleOutlineIcon>
+                            <AddCircleOutlineIcon color={nominees.some(movie => movie.imdbID === tile.imdbID) ? 'disabled' : 'primary'} className="classes.addIcon"></AddCircleOutlineIcon>
                           </IconButton>
                         </Grid>
                         <Grid item xs>
@@ -159,8 +195,41 @@ export default function CenteredGrid() {
               }
             </Paper>
           </Grid>
-          <Nominations nominees={nominees}></Nominations>
+          <Nominations nominees={nominees} onChange={handleChange}></Nominations>
         </Grid>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'center',
+          }}
+          open={addedMovieSnackbar}
+          autoHideDuration={3000}
+          onClose={handleClose}
+          message="Added to nominees"
+          action={
+            <React.Fragment>
+              <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </React.Fragment>
+          }
+        />
+        <Dialog
+          open={exceedsMaxDialogOpen}
+          onClose={handleExceedsDialogClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">{"Relaxxxx dude only 5 Shoppies are allowed"}</DialogTitle>
+          <DialogContent>
+
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleExceedsDialogClose} color="primary">
+              Ok
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     );
   }

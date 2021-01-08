@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -25,7 +25,7 @@ const useStyles = makeStyles((theme) => ({
     },
     card: {
         minWidth: 800,
-        minHeight: 150,
+        minHeight: 200,
     },
     img: {
         margin: 'auto',
@@ -50,9 +50,9 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SimplePopover(props) {
-    console.log(props)
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
+    const [counter, setCounter] = useState(0);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -60,6 +60,16 @@ export default function SimplePopover(props) {
 
     const handleClose = () => {
         setAnchorEl(null);
+    };
+
+    const removeNominee = (movie, index) => {
+        const newNominees = props.nominees;
+        if (index > -1) {
+            newNominees.splice(index, 1);
+        }
+        props.onChange(newNominees);
+        localStorage.setItem('nominees', JSON.stringify(newNominees));
+        setCounter(counter + 1);
     };
 
     const open = Boolean(anchorEl);
@@ -95,28 +105,33 @@ export default function SimplePopover(props) {
                     className={classes.card}
                     variant="outlined">
                     <CardContent>
-                        <Grid container spacing={2}>
-                            {props.nominees.map((tile) => (
-                                <Grid item xs={3}>
-                                    <Grid container justify="center" alignItems="center" direction="column" spacing={2}>
-                                        <Grid item>
-                                            <img className={classes.img} alt="complex" src={tile.Poster} />
+                        {
+                            props.nominees.length < 1 || props.nominees == undefined ? (<Typography>Nominate your favourite movies and they will appear here!</Typography>) : (
+                                <Grid container spacing={2}>
+                                    {props.nominees.map((nominee, index) => (
+                                        <Grid item xs={2}>
+                                            <Grid container justify="center" alignItems="center" direction="column" spacing={2}>
+                                                <Grid item>
+                                                    <img className={classes.img} alt="complex" src={nominee.Poster} />
+                                                </Grid>
+                                                <IconButton className={classes.removeButton} onClick={() => removeNominee(nominee, index)} aria-label="add" size="small">
+                                                    <RemoveCircleOutlineIcon className={classes.removeIcon} ></RemoveCircleOutlineIcon>
+                                                </IconButton>
+                                                <Grid item xs>
+                                                    <Typography className={classes.movieTitle} gutterBottom variant="subtitle1">
+                                                        {nominee.Title}
+                                                    </Typography>
+                                                    <Typography className={classes.movieYear} variant="body2" color="textSecondary">
+                                                        {nominee.Year}
+                                                    </Typography>
+                                                </Grid>
+                                            </Grid>
                                         </Grid>
-                                        <IconButton className={classes.removeButton} aria-label="add" size="small">
-                                            <RemoveCircleOutlineIcon className={classes.removeIcon} ></RemoveCircleOutlineIcon>
-                                        </IconButton>
-                                        <Grid item xs>
-                                            <Typography className={classes.movieTitle} gutterBottom variant="subtitle1">
-                                                {tile.Title}
-                                            </Typography>
-                                            <Typography className={classes.movieYear} variant="body2" color="textSecondary">
-                                                {tile.Year}
-                                            </Typography>
-                                        </Grid>
-                                    </Grid>
+                                    ))}
                                 </Grid>
-                            ))}
-                        </Grid>
+                            )
+                        }
+
                     </CardContent>
                 </Card>
             </Popover>
