@@ -12,8 +12,6 @@ import RemoveCircleOutlineIcon from '@material-ui/icons/RemoveCircleOutline';
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        // marginLeft: 100,
-        // marginRight: 100
     },
     typography: {
         padding: theme.spacing(2),
@@ -52,7 +50,6 @@ const useStyles = makeStyles((theme) => ({
 export default function SimplePopover(props) {
     const classes = useStyles();
     const [anchorEl, setAnchorEl] = React.useState(null);
-    const [counter, setCounter] = useState(0);
 
     const handleClick = (event) => {
         setAnchorEl(event.currentTarget);
@@ -66,10 +63,9 @@ export default function SimplePopover(props) {
         const newNominees = props.nominees;
         if (index > -1) {
             newNominees.splice(index, 1);
+            localStorage.setItem('nominees', JSON.stringify(newNominees));
+            props.onChange(newNominees);
         }
-        props.onChange(newNominees);
-        localStorage.setItem('nominees', JSON.stringify(newNominees));
-        setCounter(counter + 1);
     };
 
     const open = Boolean(anchorEl);
@@ -88,9 +84,8 @@ export default function SimplePopover(props) {
                 anchorEl={anchorEl}
                 onClose={handleClose}
                 anchorPosition={{
-                    left: '100',
-                    top: '800'
-
+                    left: 100,
+                    top: 800
                 }}
                 anchorOrigin={{
                     vertical: 'top',
@@ -106,7 +101,7 @@ export default function SimplePopover(props) {
                     variant="outlined">
                     <CardContent>
                         {
-                            props.nominees.length < 1 || props.nominees == undefined ? (<Typography>Nominate your favourite movies and they will appear here!</Typography>) : (
+                            props.nominees.length < 1 || props.nominees === undefined ? (<Typography>Nominate your favourite movies and they will appear here!</Typography>) : (
                                 <Grid container spacing={2}>
                                     {props.nominees.map((nominee, index) => (
                                         <Grid item xs={2}>

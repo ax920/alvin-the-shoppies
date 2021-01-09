@@ -70,15 +70,18 @@ export default function CenteredGrid() {
   const [hasSearched, setHasSearched] = useState(false);
   const [searchTitle, setSearchTitle] = useState('');
   const [nominees, setNominees] = useState(JSON.parse(localStorage.getItem('nominees')) || []);
-  const [addedMovieSnackbar, setAddedMovieSnackbar] = React.useState(false);
-  const [exceedsMaxDialogOpen, setExceedsMaxDialogOpen] = React.useState(false);
+  const [addedMovieSnackbar, setAddedMovieSnackbar] = useState(false);
+  const [exceedsMaxDialogOpen, setExceedsMaxDialogOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('nominees', JSON.stringify(nominees));
-  }, [nominees]);
+  });
 
   const handleChange = (newNominees) => {
-    setNominees(newNominees);
+    setNominees([...newNominees]);
+    // https://stackoverflow.com/questions/56266575/why-is-usestate-not-triggering-re-render
+    // LOL
+    // Was passing a reference to the old array - React saw them as the same and didn't trigger re-render
   }
 
   const getMovies = () => {
@@ -99,7 +102,7 @@ export default function CenteredGrid() {
   const classes = useStyles();
 
   const keyDown = (event) => {
-    if (event.keyCode == 13) {
+    if (event.keyCode === 13) {
       setIsLoaded(false);
       setHasSearched(true);
       getMovies();
@@ -114,7 +117,7 @@ export default function CenteredGrid() {
     if (nominees.some(movie => movie.imdbID === tile.imdbID)) {
       return;
     }
-    if (nominees.length == 5) {
+    if (nominees.length === 5) {
       handleExceedsDialogOpen();
       return;
     }
@@ -176,7 +179,7 @@ export default function CenteredGrid() {
                         <Grid item>
                           <img className={classes.img} alt="complex" src={tile.Poster} />
                           <IconButton aria-label="add" onClick={() => onAddMovie(tile)} size="small">
-                            <AddCircleOutlineIcon color={nominees.some(movie => movie.imdbID === tile.imdbID) ? 'disabled' : 'primary'} className="classes.addIcon"></AddCircleOutlineIcon>
+                            <AddCircleOutlineIcon color={nominees.map(nominee => nominee.imdbID).includes(tile.imdbID) ? 'disabled' : 'primary'} className="classes.addIcon"></AddCircleOutlineIcon>
                           </IconButton>
                         </Grid>
                         <Grid item xs>
