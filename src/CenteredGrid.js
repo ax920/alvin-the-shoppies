@@ -81,7 +81,8 @@ export default function CenteredGrid() {
     setNominees([...newNominees]);
     // https://stackoverflow.com/questions/56266575/why-is-usestate-not-triggering-re-render
     // LOL
-    // Was passing a reference to the old array - React saw them as the same and didn't trigger re-render
+    // Must spread the array so that React recognizes the new array as a state change and therefore re-renders
+    // Otherwise it's the same array reference, so it thinks there's no reason to render
   }
 
   const getMovies = () => {
@@ -125,7 +126,7 @@ export default function CenteredGrid() {
     setAddedMovieSnackbar(true);
   };
 
-  const handleClose = (event, reason) => {
+  const handleAddMovieSnackbarClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
@@ -207,11 +208,11 @@ export default function CenteredGrid() {
           }}
           open={addedMovieSnackbar}
           autoHideDuration={3000}
-          onClose={handleClose}
+          onClose={handleAddMovieSnackbarClose}
           message="Added to nominees"
           action={
             <React.Fragment>
-              <IconButton size="small" aria-label="close" color="inherit" onClick={handleClose}>
+              <IconButton size="small" aria-label="close" color="inherit" onClick={handleAddMovieSnackbarClose}>
                 <CloseIcon fontSize="small" />
               </IconButton>
             </React.Fragment>
