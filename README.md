@@ -4,7 +4,7 @@ http://alvin-the-shoppies.herokuapp.com
 
 # How to use this app
 
-Search for your favourite movies in the search box, and add click the add button
+Search for your favourite movies in the search box and click the plus button
 to add it to your nominee list. A maximum of 5 shoppies are allowed!
 
 View your nominees by clicking the red menu button in the bottom left.
