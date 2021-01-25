@@ -1,3 +1,15 @@
+# Check out my take on the Shoppies 2021!
+
+http://alvin-the-shoppies.herokuapp.com
+
+# How to use this app
+
+Search for your favourite movies in the search box, and add click the add button
+to add it to your nominee list. A maximum of 5 shoppies are allowed!
+
+View your nominees by clicking the red menu button in the bottom left.
+From here, you can remove unwanted nominees.
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
